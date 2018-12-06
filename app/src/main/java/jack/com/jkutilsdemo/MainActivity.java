@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         c.setDelegate(new CarouselView.CarouselDelegate() {
 
             @Override
-            public void carouselWillShowItem(CarouselView carousel, View cell, int index) {
+            public void carouselWillDisplayItem(CarouselView carousel, View cell, int index) {
 //                cell.setBackgroundColor(getColor());
                 String s = a.get(index);
                 TextView tv = cell.findViewById(R.id.tv_number);
@@ -223,8 +223,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void carouselDidShowItem(CarouselView carousel, int index) {
-//                Log.d("Scroll", "carouselDidShowItem: " + index);
+            public void carouselDidDisplayItem(CarouselView carousel, View cell, int index) {
+
+            }
+
+            @Override
+            public void carouselWillEndDisplayItem(CarouselView carousel, View cell, int index) {
+
             }
 
             @Override

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.usai.redant.rautils.dateTimePicker.TimePickerView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <NumberPicker
+        android:id="@+id/jk_time_picker_hour"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:text=":"
+        />
+
+    <NumberPicker
+        android:id="@+id/jk_time_picker_minute"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        android:textColor="#000000"
+        android:text=":"
+        />
+
+    <NumberPicker
+        android:id="@+id/jk_time_picker_second"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        />
+
+
+
+</com.usai.redant.rautils.dateTimePicker.TimePickerView>

@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">JKUtils</string>
+
+    <string name="jk_allow_camera_and_storage">please allow app use camera and storage</string>
+
+    <string name="jk_map_alert_no_google_map">There is no google map</string>
+
+    <string name="jk_email_no_email">There is no email application</string>
+
+
 </resources>

@@ -5,10 +5,13 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.provider.Settings;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Locale;
 
 public class JKUtils {
 
@@ -59,5 +62,35 @@ public class JKUtils {
             pref = context.getSharedPreferences(key, 0);
         }
         return pref;
+    }
+
+    public static String getDeviceId(Context context) {
+        return getAndroidId(context);
+    }
+
+    public static String getAndroidId(Context context) {
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    public static boolean isDebugMode(Context context) {
+        try {
+            ApplicationInfo info = context.getApplicationInfo();
+            return (info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static String getSystemLanguageCode(Context context) {
+        Locale curLocale = context.getResources().getConfiguration().locale;
+        String languageCode = curLocale.getLanguage();
+        return languageCode;
+    }
+
+    public static String[] list2Array(List list) {
+        if (list != null) {
+            return (String[])list.toArray(new String[list.size()]);
+        }
+        return null;
     }
 }

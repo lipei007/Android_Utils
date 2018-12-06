@@ -47,6 +47,10 @@ public class BasicDialog extends Dialog {
         }
     }
 
+    public View getRootView() {
+        return mRootView;
+    }
+
     @Override
     public void show() {
 

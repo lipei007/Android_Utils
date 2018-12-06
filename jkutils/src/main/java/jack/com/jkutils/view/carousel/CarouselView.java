@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,6 +28,7 @@ public class CarouselView extends RelativeLayout {
     private CarouselAdapter mAdapter;
     private int mCurrentItem = 1;
     private int mItemCount;
+    private HashMap<Integer, Object> mPositionViewMap = new HashMap<>();
 
     public CarouselView(Context context) {
         super(context);
@@ -62,7 +64,6 @@ public class CarouselView extends RelativeLayout {
             @Override
             public void onPageSelected(int position) {
 
-//                Log.d("Selected", "onPageSelected: " + position);
                 mCurrentItem = position;
                 int display_index = mCurrentItem;
                 if (position == 0) {
@@ -74,7 +75,8 @@ public class CarouselView extends RelativeLayout {
 
                     // 代理方法在此调用避免两端点的索引重复出现
                     if (mDelegate != null) {
-                        mDelegate.carouselDidShowItem(self,display_index - 1);
+                        View cell = (View) mPositionViewMap.get(position);
+                        mDelegate.carouselDidDisplayItem(self,cell,display_index - 1);
                     }
                 }
 
@@ -108,21 +110,23 @@ public class CarouselView extends RelativeLayout {
     }
 
     public void reloadData() {
+        reloadDataWithOffset(0);
+    }
+
+    public void reloadDataWithOffset(int offset) {
         mAdapter.notifyDataSetChanged();
-        mCurrentItem = 1;
+        mCurrentItem = 1 + offset;
         mPager.setCurrentItem(mCurrentItem,false);
         if (mAutoScroll) {
-
             startAutoScroll();
         }
     }
 
-
-
     public interface CarouselDelegate {
 
-        void carouselWillShowItem(CarouselView carousel, View cell, int index);
-        void carouselDidShowItem(CarouselView carousel, int index);
+        void carouselWillDisplayItem(CarouselView carousel, View cell, int index);
+        void carouselDidDisplayItem(CarouselView carousel, View cell, int index);
+        void carouselWillEndDisplayItem(CarouselView carousel, View cell, int index);
         int  carouselNumberOfItems(CarouselView carousel);
 
     }
@@ -163,8 +167,24 @@ public class CarouselView extends RelativeLayout {
         public void destroyItem(ViewGroup container, int position, Object object) {
 
             View cell = (View) object;
+
+            int index = position;
+            if (position == 0) {
+                index = mItemCount - 1;
+            } else if (position == mItemCount + 1) {
+                index = 0;
+            } else {
+                index = position - 1;
+            }
+
+            if (mDelegate != null) {
+                mDelegate.carouselWillEndDisplayItem(self, cell, index);
+            }
+
             container.removeView(cell);
             mReusePool.add(cell);
+
+            mPositionViewMap.remove(position);
         }
 
         @Override
@@ -190,12 +210,13 @@ public class CarouselView extends RelativeLayout {
                 index = position - 1;
             }
 
-
             if (mDelegate!= null) {
-                mDelegate.carouselWillShowItem(self,cell,index);
+                mDelegate.carouselWillDisplayItem(self,cell,index);
             }
 
             container.addView(cell);
+
+            mPositionViewMap.put(position, cell);
 
             return cell;
         }

@@ -6,6 +6,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Base64;
 import android.webkit.MimeTypeMap;
 
 import org.json.JSONObject;
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.security.MessageDigest;
 
 /**
  * 文件操作工具，非线程安全
@@ -92,6 +94,9 @@ public class FileUtils {
         void progress(long progress);
     }
 
+    /**
+     * Write
+     * */
     public boolean writeData2DiskFromInput(File file, InputStream input, ProgressHandler progressHandler) {
 
         if (file == null) {
@@ -221,6 +226,76 @@ public class FileUtils {
 
         return result;
     }
+
+    /**
+     * Read
+     * */
+    public byte[] getBytesOfFile(File file) {
+        if (file == null || !file.exists()) {
+            return null;
+        }
+
+        if (!file.isFile()) {
+            return null;
+        }
+
+        byte[] bytes = null;
+        FileInputStream is = null;
+        try {
+
+            is = new FileInputStream(file);
+            bytes = new byte[(int)file.length()];
+
+            is.read(bytes);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return bytes;
+    }
+
+    public byte[] getBytesOfUri(Context context, Uri uri) {
+
+        if (context == null || uri == null) {
+            return null;
+        }
+
+        byte[] bytes = null;
+        InputStream is = null;
+        try {
+
+            is = context.getContentResolver().openInputStream(uri);
+            bytes = new byte[is.available()];
+            is.read(bytes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return bytes;
+
+    }
+
+
+    /**
+     * New File
+     * */
 
     private String filterFileName(String fileName) {
         if (fileName == null) {
@@ -474,9 +549,18 @@ public class FileUtils {
 
         }
 
-
-
         return false;
+    }
+
+    public void copyFileFromUri(Context context, Uri srcUri, String dest) {
+        if (context == null || srcUri == null || dest == null) {
+            return;
+        }
+
+        byte[] bytes = getBytesOfUri(context, srcUri);
+        if (bytes != null) {
+            writeByte2Path(bytes, dest);
+        }
     }
 
     /**
@@ -582,4 +666,78 @@ public class FileUtils {
 
     }
 
+    /**
+     * base64
+     * */
+
+    public String base64StringFromFile(String path) {
+        if (path == null) {
+            return null;
+        }
+
+        File file = new File(path);
+        if (!file.exists()) {
+            return null;
+        }
+
+        if (!file.isFile()) {
+            return null;
+        }
+
+        byte[] bytes = getBytesOfFile(file);
+
+        if (bytes != null) {
+
+            String base64Str = Base64.encodeToString(bytes,Base64.DEFAULT);
+
+            return base64Str;
+        }
+        return null;
+    }
+
+    public String base64StringFromUri(Context context, Uri uri) {
+        if (context == null || uri == null) {
+            return null;
+        }
+
+        byte[] bytes = getBytesOfUri(context, uri);
+        if (bytes != null) {
+
+            String base64Str = Base64.encodeToString(bytes,Base64.DEFAULT);
+
+            return base64Str;
+        }
+        return null;
+    }
+
+    /**
+     * MD5
+     * */
+    private static final char HEX_DIGITS[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    private String toHexString(byte[] b) {
+        StringBuilder sb = new StringBuilder(b.length * 2);
+        for (int i = 0; i < b.length; i++) {
+            sb.append(HEX_DIGITS[(b[i] & 0xf0) >>> 4]);
+            sb.append(HEX_DIGITS[b[i] & 0x0f]);
+        }
+        return sb.toString();
+    }
+
+    public String fileMD5(String filePath) {
+        InputStream fis;
+        byte[] buffer = new byte[1024];
+        int numRead = 0;
+        MessageDigest md5;
+        try{
+            fis = new FileInputStream(filePath);
+            md5 = MessageDigest.getInstance("MD5");
+            while((numRead=fis.read(buffer)) > 0) {
+                md5.update(buffer,0,numRead);
+            }
+            fis.close();
+            return toHexString(md5.digest());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

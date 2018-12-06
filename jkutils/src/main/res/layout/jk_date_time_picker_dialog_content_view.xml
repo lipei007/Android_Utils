@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+    android:background="@drawable/jk_round_corner_10"
+    >
+
+    <TextView
+        android:id="@+id/jk_date_time_picker_title_tv"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:text="Title"
+        android:gravity="center"
+        />
+
+    <LinearLayout
+        android:id="@+id/jk_date_time_picker_confirm_panel"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        >
+
+        <Button
+            android:id="@+id/jk_date_time_picker_cancel_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/jk_button_background"
+            android:textColor="#2476FF"
+            android:textSize="17sp"
+            android:textAllCaps="false"
+            android:text="Cancel"
+            />
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="#eeeeee"
+            />
+
+        <Button
+            android:id="@+id/jk_date_time_picker_ok_btn"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/jk_button_background"
+            android:textColor="#ff2200"
+            android:textSize="17sp"
+            android:textAllCaps="false"
+            android:text="Ok"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/jk_date_time_picker_loop_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/jk_date_time_picker_title_tv"
+        android:layout_marginTop="20dp"
+        android:layout_above="@id/jk_date_time_picker_confirm_panel"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        >
+    </LinearLayout>
+
+</RelativeLayout>
