@@ -1,5 +1,6 @@
 package jack.com.jkutils.contact;
 
+import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -30,6 +31,9 @@ public class ContactsManager {
             ContactsContract.CommonDataKinds.Phone.NUMBER;
     private static final String COLUMN_NUMBER_TYPE =
             ContactsContract.CommonDataKinds.Phone.TYPE;
+    private static final String COLUMN_NUMBER_LABEL =
+            ContactsContract.CommonDataKinds.Phone.LABEL;
+
     private static final String COLUMN_EMAIL =
             ContactsContract.CommonDataKinds.Email.DATA;
     private static final String COLUMN_EMAIL_TYPE =
@@ -470,6 +474,259 @@ public class ContactsManager {
 
         context.startActivity(intent);
 
+    }
+
+    private String adjustNullString(String str) {
+        if (str == null) {
+            str = "";
+        }
+        return str;
+    }
+
+    /**
+     * 查询Contact信息
+     * */
+    public Result queryContact(Uri uri) {
+        if (uri != null) {
+
+            Cursor cursor = contentResolver.query(uri, null, null, null, null);
+
+            if (cursor != null) {
+
+                Result result = new Result();
+
+                if (cursor.moveToFirst()) {
+
+                    //获取联系人的ID
+                    String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+
+                    //获取联系人的姓名
+                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    result.name = name;
+
+                    // Fetch Job
+                    Cursor jobCur = contentResolver.query(
+                            ContactsContract.Data.CONTENT_URI,
+                            new String[]{ContactsContract.CommonDataKinds.Organization.COMPANY, ContactsContract.CommonDataKinds.Organization.TITLE},
+                            COLUMN_CONTACT_ID + "='" + id + "'" + " AND " + ContactsContract.Contacts.Data.MIMETYPE + "='"
+                                    + ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE + "'", null, null);
+                    if (jobCur != null) {
+                        while (jobCur.moveToNext()) {
+
+                            String company = jobCur.getString(0);
+                            String title = jobCur.getString(1);
+
+                            Log.d(TAG, "queryContact: " + company + " " + title);
+
+                            String job = String.format("%s %s", adjustNullString(company), adjustNullString(title));
+                            result.addJob(job);
+                        }
+                        jobCur.close();
+                    }
+
+
+                    //Fetch Phone Number
+                    Cursor phoneCur = contentResolver.query(
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            new String[]{COLUMN_NUMBER, COLUMN_NUMBER_TYPE, COLUMN_NUMBER_LABEL},
+                            COLUMN_CONTACT_ID + "='" + id + "'", null, null);
+                    if (phoneCur != null) {
+                        while(phoneCur.moveToNext()) {
+
+                            String phoneNumber = phoneCur.getString(phoneCur.getColumnIndex(COLUMN_NUMBER));
+                            String phoneType = phoneCur.getString(phoneCur.getColumnIndex(COLUMN_NUMBER_TYPE));
+                            String phoneLabel = phoneCur.getString(phoneCur.getColumnIndex(COLUMN_NUMBER_LABEL));
+
+                            Log.d(TAG, "queryContact: " + phoneType + " " + phoneLabel + " " + phoneNumber);
+
+                            if (Integer.valueOf(phoneType) == ContactsContract.CommonDataKinds.Phone.TYPE_FAX_WORK || Integer.valueOf(phoneType) == ContactsContract.CommonDataKinds.Phone.TYPE_FAX_HOME) {
+
+                                result.addFax(adjustNullString(phoneNumber));
+
+                            } else {
+
+                                result.addPhoneNumber(adjustNullString(phoneNumber));
+                            }
+
+                        }
+                        phoneCur.close();
+                    }
+
+
+                    //Fetch email
+                    Cursor emailCur = contentResolver.query(
+                            ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                            new String[]{COLUMN_EMAIL, COLUMN_EMAIL_TYPE},
+                            COLUMN_CONTACT_ID + "='" + id + "'", null, null);
+                    if (emailCur != null) {
+                        while(emailCur.moveToNext()) {
+
+                            String email = emailCur.getString(emailCur.getColumnIndex(COLUMN_EMAIL));
+                            String emailType = emailCur.getString(emailCur.getColumnIndex(COLUMN_EMAIL_TYPE));
+
+                            Log.d(TAG, "queryContact: " + emailType + " " + email);
+
+                            result.addEmail(adjustNullString(email));
+
+                        }
+                        emailCur.close();
+                    }
+
+                    // Fetch Address
+                    Cursor addressCur = contentResolver.query(
+                            ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_URI,
+                            null,
+                            COLUMN_CONTACT_ID + "='" + id + "'", null, null);
+                    if (addressCur != null) {
+                        while (addressCur.moveToNext()) {
+
+                            String country = addressCur.getString(addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY));
+                            String state = addressCur.getString(addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.REGION));
+                            String city = addressCur.getString(addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY));
+                            String street = addressCur.getString(addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.STREET));
+                            String postalCode = addressCur.getString(addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE));
+                            Log.d(TAG, "queryContact: " + postalCode + " " + country + " " + " " + state + " " + city + " " + street);
+
+                            String formatAddress = addressCur.getString(addressCur.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
+                            Log.d(TAG, "queryContact: " + formatAddress);
+
+                            Result.Address addressRes = new Result.Address();
+                            addressRes.country = country;
+                            addressRes.state = state;
+                            addressRes.city = city;
+                            addressRes.street = street;
+                            addressRes.postalCode = postalCode;
+
+                            result.addAddress(addressRes);
+
+                        }
+                        addressCur.close();
+                    }
+
+                    // Fetch URL
+                    Cursor webCur = contentResolver.query(
+                            ContactsContract.Data.CONTENT_URI,
+                            new String[] {ContactsContract.CommonDataKinds.Website.URL},
+                            COLUMN_CONTACT_ID + "='" + id + "'" + " And " + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE + "'", null, null);
+                    if (webCur != null) {
+                        while (webCur.moveToNext()) {
+
+                            String web = webCur.getString(0);
+                            Log.d(TAG, "queryContact: " + web);
+
+                            result.addWebsite(adjustNullString(web));
+                        }
+                        webCur.close();
+                    }
+
+
+                }
+                cursor.close();
+
+                return result;
+            }
+        }
+        return null;
+    }
+
+    public static class Result {
+
+        public static class Address {
+
+            public String country, state ,city, street, postalCode;
+        }
+
+        private String name;
+        private ArrayList<String> jobArray = new ArrayList<>();
+        private ArrayList<String> phoneArray = new ArrayList<>();
+        private ArrayList<String> emailArray = new ArrayList<>();
+        private ArrayList<String> faxArray = new ArrayList<>();
+        private ArrayList<Address> addressArray = new ArrayList<>();
+        private ArrayList<String> urlArray = new ArrayList<>();
+
+        private void addJob(String job) {
+            if (job != null) {
+                jobArray.add(job);
+            }
+        }
+
+        private void addPhoneNumber(String phoneNumber) {
+            if (phoneNumber != null) {
+                phoneArray.add(phoneNumber);
+            }
+        }
+
+        private void addFax(String fax) {
+            if (fax != null) {
+                faxArray.add(fax);
+            }
+        }
+
+        private void addEmail(String email) {
+            if (email != null) {
+                emailArray.add(email);
+            }
+        }
+
+        private void addAddress(Address address) {
+            if (address != null) {
+                addressArray.add(address);
+            }
+        }
+
+        private void addWebsite(String url) {
+            if (url != null) {
+                urlArray.add(url);
+            }
+        }
+
+        public String getName() {
+            if (name == null) {
+                name = "";
+            }
+            return name;
+        }
+
+        public ArrayList<String> getJobs() {
+            return jobArray;
+        }
+
+        public ArrayList<String> getPhoneNumbers() {
+            return phoneArray;
+        }
+
+        public ArrayList<String> getEmails() {
+            return emailArray;
+        }
+
+        public ArrayList<String> getFaxs() {
+            return faxArray;
+        }
+
+        public ArrayList<Address> getAddresses() {
+            return addressArray;
+        }
+
+        public ArrayList<String> getWebsites() {
+            return urlArray;
+        }
+    }
+
+    /**
+     * 联系人选择
+     * 在 onActivityResult 中处理返回
+     * if (resultCode == RESULT_OK) {
+     *
+     *    Uri uri = data.getData();
+     * }
+     * */
+    public static void startContactPickerActivity(Activity activity, int requestCode) {
+
+        if (activity != null) {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setData(ContactsContract.Contacts.CONTENT_URI);
+            activity.startActivityForResult(intent, requestCode);
+        }
     }
 }
 
