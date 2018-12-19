@@ -1,6 +1,6 @@
-package jack.com.jkutils.contactKit;
+package jack.com.jkutils.contactKit.element;
 
-public class PhoneNumber {
+public class PhoneNumber extends BaseElement {
 
 
     public enum PhoneNumberType {
@@ -32,6 +32,8 @@ public class PhoneNumber {
     public String value;
     public String localizedLabel;
 
-
+    public PhoneNumber(Integer id) {
+        super(id);
+    }
 
 }

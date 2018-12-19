@@ -1,6 +1,6 @@
-package jack.com.jkutils.contactKit;
+package jack.com.jkutils.contactKit.element;
 
-public class SocialProfile {
+public class SocialProfile extends BaseElement {
 
     public enum SocialProfileType {
         TYPE_CUSTOM,
@@ -36,5 +36,13 @@ public class SocialProfile {
 
     public SocialProfileProtocol getSocialProtocol() {
         return SocialProfileProtocol.values()[imProtocol + 1];
+    }
+
+    public int getImProtocol() {
+        return imProtocol;
+    }
+
+    public SocialProfile(Integer id) {
+        super(id);
     }
 }

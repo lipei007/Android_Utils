@@ -1,6 +1,6 @@
-package jack.com.jkutils.contactKit;
+package jack.com.jkutils.contactKit.element;
 
-public class PostalAddress {
+public class PostalAddress extends BaseElement {
 
     public enum AddressType {
         TYPE_CUSTOM,
@@ -15,4 +15,11 @@ public class PostalAddress {
     public String label;
     public String localizedLabel;
 
+    public boolean isEmpty() {
+        return country == null && state == null && city == null && street == null && postalCode == null;
+    }
+
+    public PostalAddress(Integer id) {
+        super(id);
+    }
 }
