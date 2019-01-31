@@ -12,7 +12,7 @@ import android.os.Bundle;
 
 
 
-public class ApexApplication extends Application {
+public class BasicApplication extends Application {
 
     // region Activity Life
     private boolean isBackground = false;
@@ -77,7 +77,7 @@ public class ApexApplication extends Application {
 
     // region Life Circle
 
-    private static ApexApplication instance;
+    private static BasicApplication instance;
     private LifeCallback mLifeCallback;
     private ServiceConnection mServiceConnection = null;
 
@@ -102,7 +102,7 @@ public class ApexApplication extends Application {
     // endregion
 
     // region Getter
-    public static ApexApplication sharedApplication() {
+    public static BasicApplication sharedApplication() {
         return instance;
     }
 
