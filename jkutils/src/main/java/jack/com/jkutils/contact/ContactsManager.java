@@ -13,6 +13,10 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+/**
+ * @deprecated use contactKit
+ * */
+@Deprecated
 public class ContactsManager {
 
     private ContentResolver contentResolver;

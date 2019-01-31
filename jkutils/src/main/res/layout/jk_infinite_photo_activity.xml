@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <com.usai.redant.rautils.carousel.CarouselView
+        android:id="@+id/jk_infinite_photo_carousel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        >
+
+    </com.usai.redant.rautils.carousel.CarouselView>
+
+    <TextView
+        android:id="@+id/jk_infinite_photo_indicator_tv"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#888888"
+        android:background="@drawable/jk_infinite_photo_index_round_corner"
+        android:textSize="17sp"
+        android:gravity="center"
+        android:text="100/100"
+        />
+
+</RelativeLayout>

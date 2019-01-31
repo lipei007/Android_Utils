@@ -5,6 +5,10 @@ import android.provider.ContactsContract;
 
 import java.io.ByteArrayOutputStream;
 
+/**
+ * @deprecated use contactKit
+ * */
+@Deprecated
 public class Contact {
 
     public static final String NUMBER_TYPE_WORK = String.valueOf(ContactsContract.CommonDataKinds.Phone.TYPE_WORK);

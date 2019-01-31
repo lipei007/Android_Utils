@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.usai.redant.rautils.infinitephoto.InfinitePhotoItemCell xmlns:android="http://schemas.android.com/apk/res/android"
+                                                             android:layout_width="match_parent"
+                                                             android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/jk_infinite_photo_iv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="TODO" android:scaleType="fitCenter"
+        android:background="#aaffaa"
+        />
+
+</com.usai.redant.rautils.infinitephoto.InfinitePhotoItemCell>
