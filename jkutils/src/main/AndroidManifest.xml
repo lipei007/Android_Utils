@@ -20,4 +20,20 @@
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
+    <!--Activity-->
+
+    <application>
+
+        <activity android:name=".imagecrop.CropImageActivity"
+            android:screenOrientation="portrait"
+            >
+
+        </activity>
+
+        <activity android:name=".infinitephoto.InfinitePhotoActivity">
+
+        </activity>
+
+    </application>
+
 </manifest>
